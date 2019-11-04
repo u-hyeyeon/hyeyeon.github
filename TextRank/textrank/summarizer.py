@@ -190,7 +190,7 @@ class KeysentenceSummarizer:
                 raise ValueError('The shape of bias must be (n_sents,) but {}'.format(bias.shape))
         elif bias is not None:
             raise ValueError('The type of bias must be None or numpy.ndarray but the type is {}'.format(type(bias)))
-
+        
         self.train_textrank(sents, bias)
         idxs = self.R.argsort()[-topk:]
         keysents = [(idx, self.R[idx], sents[idx]) for idx in reversed(idxs)]

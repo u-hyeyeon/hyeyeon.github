@@ -8,6 +8,9 @@ from .utils import tokenize_sents
 def word_graph(sents, tokenize=None, min_count=2, window=2,
     min_cooccurrence=2, vocab_to_idx=None, verbose=False):
     """
+    TextRank 에서는 명사, 동사, 형용사와 같은 단어만 단어 그래프를 만드는데 이용
+    tokenize함수에서 stopwords 처리
+    
     Arguments
     ---------
     sents : list of str
@@ -43,15 +46,16 @@ def word_graph(sents, tokenize=None, min_count=2, window=2,
 
 def cooccurrence(tokens, vocab_to_idx, window=2, min_cooccurrence=2, verbose=False):
     """
+    두 단어간의 유사도 정의하기 위해 두 단어의 co-occurrence 계산
     Arguments
     ---------
     tokens : list of list of str
         Tokenized sentence list
     vocab_to_idx : dict
         Vocabulary to index mapper
-    window : int
+    window : int (두 단어의 간격, 2-8 사이의 값을 추천, 모든 경우를 co-occurrence로 정의하려면 -1)
         Co-occurrence window size
-    min_cooccurrence : int
+    min_cooccurrence : int (dense or sparse 조정)
         Minimum cooccurrence frequency
     verbose : Boolean
         If True, verbose mode on
@@ -86,6 +90,7 @@ def cooccurrence(tokens, vocab_to_idx, window=2, min_cooccurrence=2, verbose=Fal
 
 def dict_to_mat(d, n_rows, n_cols):
     """
+    dict of dict 형식의 그래프를 scipy 의 sparse matrix 로 변환하는 함수
     Arguments
     ---------
     d : dict

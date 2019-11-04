@@ -45,12 +45,6 @@ for i in df.index :
     # TextRank based keyword extraction
     keysents = keyword_extractor.summarize(wordsList, topk=10)
     print(keysents)   # (rank, word)
-
-    # TextRank based key-sentence extraction
-    summarizer = KeysentenceSummarizer(tokenize = _tokenize, min_sim = 0.5)
-    print()
-    print(summarizer.summarize(" ".join(docs), topk=10))
-    
     if i == 10 :
         break
     
