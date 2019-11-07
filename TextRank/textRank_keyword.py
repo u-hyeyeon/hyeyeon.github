@@ -29,8 +29,6 @@ def _tokenize(sent):
     words = [w for w in words if ('NN' in w or 'XR' in w or 'VA' in w or 'VV' in w)]
     return words
 
-print(stopwords)
-
 df = pd.read_csv('ROCStories_winter2017.csv', sep='\t',  header=0)
 for i in df.index :
     storyid = df.iloc[i]["storyid"]
@@ -40,7 +38,6 @@ for i in df.index :
     wordsList = [w for w in wordsList if not w in stop_words]
     
     print()
-    print("===>> " , " ".join(docs), wordsList)
  
     # TextRank based keyword extraction
     keysents = keyword_extractor.summarize(wordsList, topk=10)
