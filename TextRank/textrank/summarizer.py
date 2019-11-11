@@ -155,10 +155,17 @@ class KeysentenceSummarizer:
         None
         """
         g = sent_graph(sents, self.tokenize, self.min_count,
-            self.min_sim, self.similarity, self.vocab_to_idx, self.verbose)
+                       self.min_sim, self.similarity, self.vocab_to_idx, self.verbose)
+        # 중복되는 단어가 없을 때 오류나는 현상 처리
+        if g == None :     # key sentence
+            self.R = None
+            return
+        
         self.R = pagerank(g, self.df, self.max_iter, bias).reshape(-1)
-        if self.verbose:
+        if self.verbose:   # key word
             print('trained TextRank. n sentences = {}'.format(self.R.shape[0]))
+            if (self.R.shape[0] >= 100) :
+                print("+++++++++++++++++++++++++++++")
 
     def summarize(self, sents, topk=30, bias=None):
         """
@@ -192,6 +199,10 @@ class KeysentenceSummarizer:
             raise ValueError('The type of bias must be None or numpy.ndarray but the type is {}'.format(type(bias)))
         
         self.train_textrank(sents, bias)
+        # 중복되는 단어가 없을 때 오류나는 현상 처리
+        if self.R is None :
+            return        
+        
         idxs = self.R.argsort()[-topk:]
         keysents = [(idx, self.R[idx], sents[idx]) for idx in reversed(idxs)]
         return keysents

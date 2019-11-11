@@ -25,7 +25,14 @@ def scan_vocabulary(sents, tokenize=None, min_count=2):
     counter = {w:c for w,c in counter.items() if c >= min_count}
     idx_to_vocab = [w for w, _ in sorted(counter.items(), key=lambda x:-x[1])]
     vocab_to_idx = {vocab:idx for idx, vocab in enumerate(idx_to_vocab)}
-    return idx_to_vocab, vocab_to_idx
+    
+    # 중복되는 단어가 없을 때 오류나는 현상 처리
+    if len(vocab_to_idx) < 2 and vocab_to_idx ==  {('.', '.'): 0} :    # remove last dot 
+        #words = words[0:-1]
+        #if vocab_to_idx is None :
+        return None, None
+    else :
+        return idx_to_vocab, vocab_to_idx
 
 def tokenize_sents(sents, tokenize):
     """
