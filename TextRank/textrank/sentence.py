@@ -37,13 +37,18 @@ def sent_graph(sents, tokenize=None, min_count=2, min_sim=0.3,
     sentence similarity graph : scipy.sparse.csr_matrix
         shape = (n sents, n sents)
     """
-
+    #print("vocab_to_idx =====>>>>>", vocab_to_idx)
+    
     if vocab_to_idx is None:
         idx_to_vocab, vocab_to_idx = scan_vocabulary(sents, tokenize, min_count)
+        # 중복되는 단어가 없을 때 오류나는 현상 처리
+        if idx_to_vocab is None and vocab_to_idx is None :
+            return None
     else:
         idx_to_vocab = [vocab for vocab, _ in sorted(vocab_to_idx.items(), key=lambda x:x[1])]
 
     x = vectorize_sents(sents, tokenize, vocab_to_idx)
+    
     if similarity == 'cosine':
         x = numpy_cosine_similarity_matrix(x, min_sim, verbose, batch_size=1000)
     else:
@@ -54,8 +59,14 @@ def vectorize_sents(sents, tokenize, vocab_to_idx):
     rows, cols, data = [], [], []
     for i, sent in enumerate(sents):
         counter = Counter(tokenize(sent))
+        
+        #print("counter =====>> ", counter)
+        
         for token, count in counter.items():
             j = vocab_to_idx.get(token, -1)
+            
+            #print("[vectorize_sents] token, count =====>>> ", j, i, count)
+            
             if j == -1:
                 continue
             rows.append(i)
@@ -63,6 +74,12 @@ def vectorize_sents(sents, tokenize, vocab_to_idx):
             data.append(count)
     n_rows = len(sents)
     n_cols = len(vocab_to_idx)
+    
+    #print("[vectorize_sents] rows =====>>> ", rows)
+    #print("[vectorize_sents] cols =====>>> ", cols)
+    #print("[vectorize_sents] data =====>>> ", data)
+    #print("[vectorize_sents] vocab_to_idx =====>>> ", vocab_to_idx)
+    
     return csr_matrix((data, (rows, cols)), shape=(n_rows, n_cols))
 
 def numpy_cosine_similarity_matrix(x, min_sim=0.3, verbose=True, batch_size=1000):
@@ -114,7 +131,12 @@ def numpy_textrank_similarity_matrix(x, min_sim=0.3, verbose=True, min_length=1,
         sim = inner.multiply(norm).tocsr()
         rows, cols = (sim >= min_sim).nonzero()
         data = np.asarray(sim[rows, cols]).reshape(-1)
-
+        
+        # matrix 값이 모두 동일하면 error
+        #print("x =====>",x)
+        #print("norm =====>",norm)
+        #print("sim =====>",sim)
+        
         # append
         mat.append(csr_matrix((data, (rows, cols)), shape=(e-b, n_rows)))
 
