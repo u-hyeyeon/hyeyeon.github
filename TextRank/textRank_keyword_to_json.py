@@ -30,9 +30,9 @@ def _tokenize(sent):
     print(words)
     return words
 """
-print(stopwords)
 
 df = pd.read_csv('ROCStories_winter2017.csv', sep='\t',  header=0)
+data = []
 for i in df.index :
     storyid = df.iloc[i]["storyid"]
     docs = [df.iloc[i]["sentence1"],df.iloc[i]["sentence2"],df.iloc[i]["sentence3"],df.iloc[i]["sentence4"],df.iloc[i]["sentence5"]]
@@ -40,15 +40,20 @@ for i in df.index :
     wordsList = nltk.word_tokenize(" ".join(docs))              # 5 sentence
     wordsList = [w for w in wordsList if not w in stop_words]
     
-    print()
-    print("===>> " , " ".join(docs), wordsList)
- 
     # TextRank based keyword extraction
     keysents = keyword_extractor.summarize(wordsList, topk=10)
+
+    print(df.iloc[i]["storyid"])
     print(keysents)   # (rank, word)
+
+    data.append({'storyid' : df.iloc[i]["storyid"],
+        'storytitle':df.iloc[i]["storytitle"],
+        'sentences' : docs,
+        'calcSimSents' : keyword_extractor.R.shape[0],
+        'rank' :keysents })    
     
-    if i == 10 :
-        break
+df2 = pd.DataFrame(data)
+df2.to_json(path + "/df_keyword.json") 
     
 """
 keywords = keyword_extractor.summarize(print(r[2:]), topk=30)

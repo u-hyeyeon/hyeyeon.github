@@ -22,7 +22,7 @@ ordf = open(path+"orderSentence.tsv", 'w', encoding='utf-8')
 summarizer = KeysentenceSummarizer(tokenize = komoran_tokenizer, min_sim = 0.3)    
 
 df = pd.read_csv('ROCStories_winter2017.csv', sep='\t',  header=0)
-
+data = []
 
 for i in df.index :
     storyid = df.iloc[i]["storyid"]
@@ -40,10 +40,16 @@ for i in df.index :
             order.append(str(rank[0]+1))
             
         ordf.write(storyid + "\t" + "\t".join(order) + "\n")
+        data.append({'storyid' : df.iloc[i]["storyid"],
+            'storytitle':df.iloc[i]["storytitle"],
+            'sentences' : sents,
+            'rank' :keysents })    
     
         csvf.flush()
         ordf.flush()
 
-
+df2 = pd.DataFrame(data)
+df2.to_json(path + "/df_keySentences.json") 
+    
 csvf.close()
 ordf.close()
