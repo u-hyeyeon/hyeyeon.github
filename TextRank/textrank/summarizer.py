@@ -192,6 +192,7 @@ class KeysentenceSummarizer:
             >>> keysents = summarizer.summarize(texts, topk=30)
         """
         n_sents = len(sents)
+        #print("=====================>>>>>> ", n_sents)        
         if isinstance(bias, np.ndarray):
             if bias.shape != (n_sents,):
                 raise ValueError('The shape of bias must be (n_sents,) but {}'.format(bias.shape))
